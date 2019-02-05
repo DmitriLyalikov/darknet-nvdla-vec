@@ -107,7 +107,7 @@ void forward_converter_layer(const converter_layer l, network net)
 #if 1
         uint8_t *temp = calloc(bufsize, sizeof(uint8_t));
         fp32_to_uint8(net.input, temp, count, params);
-        odla_dump_image_data(temp, l.w, l.h, l.c);
+        //odla_dump_image_data(temp, l.w, l.h, l.c);
         convert_nchw_to_nhwc(temp, l.w, l.h, l.c, (uint8_t*)l.output_i8);
         free(temp);
 #endif

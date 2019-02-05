@@ -6,6 +6,8 @@ DEBUG=0
 CAFFE=0
 ODLA=1
 
+CROSS_COMPILE=riscv64-unknown-linux-gnu-
+
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
       -gencode arch=compute_50,code=[sm_50,compute_50] \
@@ -42,15 +44,9 @@ SLIB=libdarknet.so
 EXEC=darknet
 OBJDIR=./obj/
 
-ifeq ($(ODLA), 1)
-CPP=/home/secondary/OpenDLA/buildroot/output/host/opt/ext-toolchain/bin/aarch64-linux-gnu-g++
-CC=/home/secondary/OpenDLA/buildroot/output/host/opt/ext-toolchain/bin/aarch64-linux-gnu-gcc
-AR=/home/secondary/OpenDLA/buildroot/output/host/opt/ext-toolchain/bin/aarch64-linux-gnu-ar
-else
-CPP=g++
-CC=gcc
-AR=ar
-endif
+CPP=$(CROSS_COMPILE)g++
+CC=$(CROSS_COMPILE)gcc
+AR=$(CROSS_COMPILE)ar
 NVCC=nvcc
 ARFLAGS=rcs
 OPTS=-Ofast
@@ -95,12 +91,12 @@ OBJ+=convolutional_kernels.o deconvolutional_kernels.o activation_kernels.o im2c
 endif
 
 ifeq ($(CAFFE), 1)
-LDFLAGS+= -L/usr/lib -L/home/secondary/OpenDLA/YOLO/share/darknet -lcaffelayer -lcaffe
+LDFLAGS+= -L/usr/lib -L. -lcaffelayer -lcaffe
 LNKDARKNET= -ldarknet
 endif
 
 ifeq ($(ODLA), 1)
-LDFLAGS+= -L/home/secondary/OpenDLA/YOLO/share/darknet -lnvdla_runtime
+LDFLAGS+= -L. -lnvdla_runtime
 LNKDARKNET= -ldarknet
 endif
 
@@ -125,14 +121,14 @@ ifeq ($(CAFFE), 1)
 $(CAFFEOBJ):
 	$(CPP) -I/usr/include -Wall -fPIC -O -c src/caffe_layer_impl.cpp -o obj/caffe_layer_impl.o
 $(CAFFELIB): $(CAFFEOBJ)
-	$(CPP) -shared obj/caffe_layer_impl.o -o libcaffelayer.so -L/usr/lib -L/home/secondary/OpenDLA/YOLO/darknet -lcaffe
+	$(CPP) -shared obj/caffe_layer_impl.o -o libcaffelayer.so -L/usr/lib -L. -lcaffe
 endif
 
 ifeq ($(ODLA), 1)
-$(ODLAOBJ):
+$(ODLAOBJ): src/odla_layer_impl.cpp
 	$(CPP) -Wall -fPIC -O -c src/odla_layer_impl.cpp -o obj/odla_layer_impl.o
 $(ODLALIB): $(ODLAOBJ)
-	$(CPP) -shared obj/odla_layer_impl.o -o libodlalayer.so -L/home/secondary/OpenDLA/YOLO/darknet  -lnvdla_runtime
+	$(CPP) -shared obj/odla_layer_impl.o -o libodlalayer.so -L.  -lnvdla_runtime
 endif
 
 $(OBJDIR)%.o: %.c $(DEPS)
