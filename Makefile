@@ -6,7 +6,7 @@ DEBUG=0
 CAFFE=0
 ODLA=1
 
-CROSS_COMPILE=riscv64-unknown-linux-gnu-
+CROSS_COMPILE ?= riscv64-unknown-linux-gnu-
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
