@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <sys/time.h>
 
 #include "nvdla/IRuntime.h"
 #include "nvdla/half.h"
@@ -34,10 +35,18 @@ extern "C" void odla_load_loadable(void *runtime, const char *loadable, int inst
 extern "C" void odla_execute(void *runtime, int instance)
 {
     IRuntime *odla_runtime = (IRuntime *)runtime;
+    struct timeval t1, t2;
+    double elapsedTime;
 
     odla_runtime->initEMU();
+    gettimeofday(&t1, NULL);
     odla_runtime->submit();
+    gettimeofday(&t2, NULL);
     odla_runtime->stopEMU();
+
+    elapsedTime = t2.tv_sec - t1.tv_sec;
+    elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000000.0;
+    printf("NVDLA time: %f seconds\n", elapsedTime);
 }
 
 extern "C" int odla_num_input(void *runtime)
