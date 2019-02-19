@@ -21,8 +21,8 @@ layer make_upsample_odla_layer(int batch, int w, int h, int c, int stride, int o
 
     l.forward = forward_upsample_odla_layer;
 
-    if(l.reverse) fprintf(stderr, "downsample_dla     %2dx  %4d x%4d x%4d   ->  %4d x%4d x%4d\n", stride, w, h, c, l.out_w, l.out_h, l.out_c);
-    else fprintf(stderr, "upsample_dla       %2dx  %4d x%4d x%4d   ->  %4d x%4d x%4d\n", stride, w, h, c, l.out_w, l.out_h, l.out_c);
+    //if(l.reverse) fprintf(stderr, "downsample_dla     %2dx  %4d x%4d x%4d   ->  %4d x%4d x%4d\n", stride, w, h, c, l.out_w, l.out_h, l.out_c);
+    //else fprintf(stderr, "upsample_dla       %2dx  %4d x%4d x%4d   ->  %4d x%4d x%4d\n", stride, w, h, c, l.out_w, l.out_h, l.out_c);
     return l;
 }
 
@@ -42,7 +42,7 @@ void upsample_dla(int8_t *in, int w, int h, int c, int batch, int stride, int fo
     int src_cube_size = surf_num*w*h*ATOMIC_CUBE, src_surf_stride = w*ATOMIC_CUBE*h, src_line_stride = w*ATOMIC_CUBE;
     int dst_cube_size = surf_num*w*h*ATOMIC_CUBE*stride*stride, dst_surf_stride = w*ATOMIC_CUBE*h*stride*stride, dst_line_stride = w*ATOMIC_CUBE*stride;
 
-    fprintf(stderr, "upsample data, w %d h %d c %d\n", w, h, c);
+    //fprintf(stderr, "upsample data, w %d h %d c %d\n", w, h, c);
     for(b = 0; b < batch; ++b){
         for(k = 0; k < surf_num; ++k){
             for(j = 0; j < h; ++j){
@@ -54,7 +54,7 @@ void upsample_dla(int8_t *in, int w, int h, int c, int batch, int stride, int fo
             }
         }
     }
-    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    //fprintf(stderr, "%s %d\n", __func__, __LINE__);
 }
 
 static void odla_dump_us_data(const char *filename, int8_t *data, int w, int h, int c)
@@ -93,17 +93,17 @@ void forward_upsample_odla_layer(const layer l, network net)
     int8_t *output;
     layer *output_layer;
 
-    fprintf(stderr, "forward_upsample_odla_layer output layer %d tensor %d\n", l.upsample_output_layer, l.upsample_output_tensor);
+    //fprintf(stderr, "forward_upsample_odla_layer output layer %d tensor %d\n", l.upsample_output_layer, l.upsample_output_tensor);
 
     output_layer = &net.layers[l.upsample_output_layer];
-    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    //fprintf(stderr, "%s %d\n", __func__, __LINE__);
     output = output_layer->input_tensors[l.upsample_output_tensor].buffer;
-    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    //fprintf(stderr, "%s %d\n", __func__, __LINE__);
 
     upsample_dla(net.input_i8, l.w, l.h, l.c, l.batch, l.stride, 1, output);
 
     char filename[80];
     snprintf(filename, sizeof(filename), "upsample_output_%02d.dimg", l.layer_index);
     odla_dump_us_data(filename, output, l.out_w, l.out_h, l.out_c);
-    fprintf(stderr, "%s %d\n", __func__, __LINE__);
+    //fprintf(stderr, "%s %d\n", __func__, __LINE__);
 }

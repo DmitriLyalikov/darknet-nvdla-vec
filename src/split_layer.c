@@ -44,7 +44,7 @@ void resize_split_layer(layer *l, int w, int h)
 
 void forward_split_layer(const layer l, network net)
 {
-    fprintf(stderr, "forward_split_layer\n");
+    //fprintf(stderr, "forward_split_layer\n");
 }
 
 void backward_split_layer(const layer l, network net)

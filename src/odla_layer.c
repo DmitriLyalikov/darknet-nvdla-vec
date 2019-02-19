@@ -121,7 +121,7 @@ void forward_odla_layer(const layer l, network net)
 {
     int8_t *input = (int8_t *)l.input_tensors[l.input_tensor].buffer;
 
-    fprintf(stderr, "copying input to tensor index %d\n", l.input_tensor);
+    //fprintf(stderr, "copying input to tensor index %d\n", l.input_tensor);
 
    //copy from network i8 output to one of input tensors
     //it is assumed that another input is from upsample layer which will
@@ -138,7 +138,7 @@ void forward_odla_layer(const layer l, network net)
     }
 
     //run network
-    fprintf(stderr, "%s %d: Executing in ODLA... \n", __func__, __LINE__);
+    //fprintf(stderr, "%s %d: Executing in ODLA... \n", __func__, __LINE__);
     odla_execute(l.odla_runtime, l.odla_instance);
 
     for (int i = 0; i < l.num_output; i++) {
