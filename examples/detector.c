@@ -583,7 +583,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
             if(!input) return;
             strtok(input, "\n");
         }
-        image im = load_image_color(input,0,0);
+        image im = load_image_4ch(input,0,0);
         if (!im.data)
             continue;
         image sized = letterbox_image(im, net->w, net->h);
